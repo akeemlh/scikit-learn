@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal, assert_array_equal
-from scipy import sparse
+from sklearn.utils.fixes import COO_CONTAINERS, CSC_CONTAINERS, CSR_CONTAINERS
 
 from sklearn.datasets import make_regression
 from sklearn.exceptions import ConvergenceWarning
@@ -248,8 +248,9 @@ def test_ransac_warn_exceed_max_skips():
     assert ransac_estimator.n_skips_invalid_model_ == 0
 
 
-def test_ransac_sparse_coo():
-    X_sparse = sparse.coo_matrix(X)
+@pytest.mark.parametrize("sparse_container", COO_CONTAINERS)
+def test_ransac_sparse_coo(sparse_container):
+    X_sparse = sparse_container(X)
 
     estimator = LinearRegression()
     ransac_estimator = RANSACRegressor(
@@ -263,8 +264,9 @@ def test_ransac_sparse_coo():
     assert_array_equal(ransac_estimator.inlier_mask_, ref_inlier_mask)
 
 
-def test_ransac_sparse_csr():
-    X_sparse = sparse.csr_matrix(X)
+@pytest.mark.parametrize("sparse_container", CSR_CONTAINERS)
+def test_ransac_sparse_csr(sparse_container):
+    X_sparse = sparse_container(X)
 
     estimator = LinearRegression()
     ransac_estimator = RANSACRegressor(
@@ -278,8 +280,9 @@ def test_ransac_sparse_csr():
     assert_array_equal(ransac_estimator.inlier_mask_, ref_inlier_mask)
 
 
-def test_ransac_sparse_csc():
-    X_sparse = sparse.csc_matrix(X)
+@pytest.mark.parametrize("sparse_container", CSC_CONTAINERS)
+def test_ransac_sparse_csc(sparse_container):
+    X_sparse = sparse_container(X)
 
     estimator = LinearRegression()
     ransac_estimator = RANSACRegressor(
